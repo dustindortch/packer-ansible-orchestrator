@@ -1,0 +1,12 @@
+---
+- name: Configure Windows hosts
+  gather_facts: true
+  hosts: all
+
+  tasks:
+    - name: Ping hosts
+      ansible.windows.win_ping:
+
+    - name: Create text file
+      ansible.windows.win_shell: |
+        Write-Output 'This is a file for my Windows hosts!' > C:\windows-demo.txt

@@ -1,0 +1,54 @@
+---
+name: Workflow to orchestrate an Ansible runner via Packer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  packer_build:
+    name: Packer Build
+    runs-on: ubuntu-20.04
+    environment:
+      name: Production
+    env:
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{vars.AZURE_CLIENT_ID}}
+      ARM_TENANT_ID: ${{vars.AZURE_TENANT_ID}}
+      ARM_SUBSCRIPTION_ID: ${{vars.AZURE_SUBSCRIPTION_ID}}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with: 
+          version: "1.8.3"
+
+      - name: AZ CLI Login
+        uses: azure/login@v1
+        id: login
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Packer Init
+        id: init
+        run: packer init .
+
+      - name: Packer Validate
+        id: validate
+        run: packer validate .
+
+      - name: Packer Build
+        id: build
+        run: packer build .

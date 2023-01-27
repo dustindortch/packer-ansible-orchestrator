@@ -1,0 +1,16 @@
+# Cache objects
+packer_cache/
+
+# Crash log
+crash.log
+
+# For built boxes
+*.box
+
+# Ansible inventory files (deviating from this convention could leak sensitive data)
+*inventory*
+
+
+# Packer variables files
+*.pkrvars.hcl
+!example.pkrvars.hcl
